@@ -102,9 +102,10 @@ public class DemoLikeTumblrActivity extends ActionBarActivity implements View.On
   }
 
   private void onFabClick(View v) {
-    int x = (v.getLeft() + v.getRight()) / 2;
-    int y = (v.getTop() + v.getBottom()) / 2;
-    float radiusOfFab = 1f * v.getWidth() / 2f;
+    int x = (v.getLeft() + v.getRight()) / 2;//centerX
+    int y = (v.getTop() + v.getBottom()) / 2;//centerY
+    float radiusOfFab = 1f * v.getWidth() / 2f; //radius的最小长度
+      //用勾股定理算出rootLayout斜边的长度，及radius的最大长度
     float radiusFromFabToRoot = (float) Math.hypot(
         Math.max(x, rootLayout.getWidth() - x),
         Math.max(y, rootLayout.getHeight() - y));
@@ -122,6 +123,7 @@ public class DemoLikeTumblrActivity extends ActionBarActivity implements View.On
 
     List<Animator> animList = new ArrayList<>();
 
+      //显示reveal效果
     Animator revealAnim = createCircularReveal(menuLayout, cx, cy, startRadius, endRadius);
     revealAnim.setInterpolator(new AccelerateDecelerateInterpolator());
     revealAnim.setDuration(200);

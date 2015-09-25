@@ -6,17 +6,20 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AnticipateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.ogaclejapan.arclayout.ArcLayout;
+import com.ogaclejapan.arclayout.demo.widget.NoTouchLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,7 @@ public class DemoLikePathActivity extends ActionBarActivity implements View.OnCl
   private static final String KEY_DEMO = "demo";
   Toast toast = null;
   View fab;
-  View menuLayout;
+    NoTouchLayout menuLayout;
   ArcLayout arcLayout;
 
   public static void startActivity(Context context, Demo demo) {
@@ -51,15 +54,82 @@ public class DemoLikePathActivity extends ActionBarActivity implements View.OnCl
     bar.setDisplayHomeAsUpEnabled(true);
 
     fab = findViewById(R.id.fab);
-    menuLayout = findViewById(R.id.menu_layout);
+    menuLayout = (NoTouchLayout) findViewById(R.id.menu_layout);
     arcLayout = (ArcLayout) findViewById(R.id.arc_layout);
 
+
+    menuLayout.setOnTouchListener(new View.OnTouchListener() {
+          @Override
+          public boolean onTouch(View v, MotionEvent event) {
+
+              switch (event.getAction()) {
+                  case MotionEvent.ACTION_MOVE:
+                      for (int i = 0, size = arcLayout.getChildCount(); i < size; i++) {
+                          View childView = arcLayout.getChildAt(i);
+                          Rect rect = new Rect();
+                          childView.getHitRect(rect);//获取子view的剪裁区域
+                          if(rect.contains((int)event.getX(),(int)event.getY())){ //点击的点是否在剪裁区域内
+                              Animator anim = ObjectAnimator.ofPropertyValuesHolder(
+                                      childView,
+                                      AnimatorUtils.scaleX(1, 1.2f),
+                                      AnimatorUtils.scaleY(1, 1.2f));
+                              anim.setDuration(100);
+                              anim.setInterpolator(new AccelerateDecelerateInterpolator());
+                              anim.start();
+                          }else {
+                              childView.setScaleX(1);
+                              childView.setScaleY(1);
+                          }
+                      }
+                      break;
+
+                  case MotionEvent.ACTION_UP:
+                      for (int i = 0, size = arcLayout.getChildCount(); i < size; i++) {
+                          arcLayout.getChildAt(i).setScaleX(1);
+                          arcLayout.getChildAt(i).setScaleY(1);
+                          View childView = arcLayout.getChildAt(i);
+                          Rect rect = new Rect();
+                          childView.getHitRect(rect);//获取子view的剪裁区域
+                          if(rect.contains((int)event.getX(),(int)event.getY())) { //点击的点是否在剪裁区域内
+                               childView.setTag(i);
+                               onChooseListener.onChoose(childView);
+                          }
+                      }
+                      menuLayout.setVisibility(View.GONE);
+                      break;
+              }
+              return false;
+          }
+      });
+
     for (int i = 0, size = arcLayout.getChildCount(); i < size; i++) {
-      arcLayout.getChildAt(i).setOnClickListener(this);
     }
 
-    fab.setOnClickListener(this);
+//    fab.setOnClickListener(this);
+      fab.setOnLongClickListener(new View.OnLongClickListener() {
+          @Override
+          public boolean onLongClick(View v) {
+              menuLayout.setVisibility(View.VISIBLE);
+              menuLayout.setFocusableInTouchMode(true);
+              return false;
+          }
+      });
   }
+
+    /**
+     * 定义一个接口当menuLayout MotionEvent.ACTION_UP时刚好再某个子view
+     * 的区域内,这调用该回调,传回选中的子view
+     */
+    private OnChooseListener onChooseListener = new OnChooseListener() {
+        @Override
+        public void onChoose(View v) {
+            Toast.makeText(DemoLikePathActivity.this,String.valueOf(v.getTag()),Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    public interface OnChooseListener{
+        void onChoose(View v);
+    }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
@@ -107,17 +177,17 @@ public class DemoLikePathActivity extends ActionBarActivity implements View.OnCl
   private void showMenu() {
     menuLayout.setVisibility(View.VISIBLE);
 
-    List<Animator> animList = new ArrayList<>();
-
-    for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
-      animList.add(createShowItemAnimator(arcLayout.getChildAt(i)));
-    }
-
-    AnimatorSet animSet = new AnimatorSet();
-    animSet.setDuration(400);
-    animSet.setInterpolator(new OvershootInterpolator());
-    animSet.playTogether(animList);
-    animSet.start();
+//    List<Animator> animList = new ArrayList<>();
+//
+//    for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
+//      animList.add(createShowItemAnimator(arcLayout.getChildAt(i)));
+//    }
+//
+//    AnimatorSet animSet = new AnimatorSet();
+//    animSet.setDuration(400);
+//    animSet.setInterpolator(new OvershootInterpolator());
+//    animSet.playTogether(animList);
+//    animSet.start();
   }
 
   @SuppressWarnings("NewApi")

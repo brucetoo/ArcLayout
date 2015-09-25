@@ -16,7 +16,7 @@
       android:textSize="20sp"
       />
 
-  <FrameLayout
+  <com.ogaclejapan.arclayout.demo.widget.NoTouchLayout
       android:id="@+id/menu_layout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
@@ -31,7 +31,7 @@
         android:layout_marginBottom="32dp"
         app:arc_axisRadius="@dimen/layout_child_offset_path"
         app:arc_freeAngle="true"
-        app:arc_origin="bottom"
+        app:arc_origin="left"
         app:arc_radius="@dimen/layout_radius_path"
         >
 
@@ -39,15 +39,9 @@
           style="@style/Item.Path"
           android:text="A"
           android:textColor="@color/path_orange"
-          app:arc_angle="30"
+          app:arc_angle="45"
           />
 
-      <Button
-          style="@style/Item.Path"
-          android:text="B"
-          android:textColor="@color/path_blue"
-          app:arc_angle="60"
-          />
 
       <Button
           style="@style/Item.Path"
@@ -60,19 +54,13 @@
           style="@style/Item.Path"
           android:text="D"
           android:textColor="@color/path_green"
-          app:arc_angle="120"
+          app:arc_angle="135"
           />
 
-      <Button
-          style="@style/Item.Path"
-          android:text="E"
-          android:textColor="@color/path_purple"
-          app:arc_angle="150"
-          />
 
     </com.ogaclejapan.arclayout.ArcLayout>
 
-  </FrameLayout>
+  </com.ogaclejapan.arclayout.demo.widget.NoTouchLayout>
 
   <Button
       android:id="@+id/fab"
